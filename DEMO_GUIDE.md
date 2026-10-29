@@ -36,7 +36,7 @@ This guide reflects the current schema and runtime configuration. The pagination
 
   This activates `application-demo.yml`; the ordinary/default profile does not load the seed. The demo profile sets `spring.sql.init.mode=always`, `spring.sql.init.data-locations=classpath:demo-data.sql`, and `spring.jpa.defer-datasource-initialization=true`. The SQL uses an H2 `MERGE` keyed by the Author primary key, so running the initializer against the same initialized schema does not create duplicate IDs.
 
-- Spring GraphQL accepts HTTP POST requests at `http://localhost:8080/graphql`. GraphiQL is not enabled by the current configuration. For example, with `curl`:
+- Spring GraphQL accepts HTTP POST requests at `http://localhost:8080/graphql`; the browser UI is at `http://localhost:8080/graphiql`. For example, the same endpoint can be queried with `curl`:
 
   ```sh
   curl -X POST http://localhost:8080/graphql \
@@ -45,6 +45,22 @@ This guide reflects the current schema and runtime configuration. The pagination
   ```
 
 - Stop the foreground application with Ctrl+C.
+
+## OpenAPI and Swagger UI
+
+When the application is running, Swagger UI is available at [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html), and the OpenAPI JSON document is at [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs). The document metadata is titled “Books & Authors API,” version `1.0.0`.
+
+This application exposes its Books and Authors operations through GraphQL, not REST controllers. springdoc documents applicable HTTP REST endpoints; it does not automatically describe the GraphQL query and mutation fields. With no REST controllers, Swagger UI may show an empty `paths` section. That is expected and does not indicate that GraphQL is unavailable.
+
+After adding OpenAPI support, the full suite was run with the configured Java 17 runtime using `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain`. The recorded result was `BUILD SUCCESSFUL`: 26 tests, 0 failures, 0 errors, and 0 skipped. This included HTTP checks for the OpenAPI JSON, Swagger UI, and GraphQL endpoint, plus the existing default/demo profile tests.
+
+## GraphiQL browser interface
+
+The Spring GraphQL starter exposes the bundled GraphiQL page at [http://localhost:8080/graphiql](http://localhost:8080/graphiql) when `spring.graphql.graphiql.enabled` is `true` in `application.yml`. The GraphQL HTTP endpoint remains [http://localhost:8080/graphql](http://localhost:8080/graphql). The UI uses the schema's introspection to provide its editor and explorer; run the documented queries and mutations below directly from the browser, inspect the returned data, and see GraphQL errors in the response panel. No REST endpoints or GraphQL contracts were added for the UI.
+
+The GraphiQL HTML page is bundled in the Spring GraphQL dependency. Its current UI module, stylesheet, and editor worker imports reference `esm.sh`, so the browser needs internet access to load those assets. The application endpoint itself remains local.
+
+For the GraphiQL change, `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain` completed successfully: 28 tests, 0 failures, 0 errors, and 0 skipped. Live browser checks also executed the `authors`, `addBook`, `updateBook`, and `deleteBook` operations; displayed nested Author data and a GraphQL error for a missing Book; and confirmed the Author remained after deleting its Book. This is the result of the current run, not a claim that the tests will pass in every environment.
 
 ## Persistence and demo data prerequisite
 
