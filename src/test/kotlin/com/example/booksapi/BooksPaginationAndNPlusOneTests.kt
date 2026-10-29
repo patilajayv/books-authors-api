@@ -52,7 +52,9 @@ class BooksPaginationAndNPlusOneTests {
     fun `books rejects invalid page and size bounds`() {
         assertGraphQlError("query { books(page: -1, size: 2) { id } }")
         assertGraphQlError("query { books(page: 0, size: 0) { id } }")
+        assertGraphQlError("query { books(page: 0, size: -1) { id } }")
         assertGraphQlError("query { books(page: 0, size: 101) { id } }")
+        assertGraphQlError("query { books(page: 0, size: 2147483647) { id } }")
     }
 
     @Test
@@ -71,6 +73,7 @@ class BooksPaginationAndNPlusOneTests {
 
         val deltaBooks = large.returnedBooks - small.returnedBooks
         val deltaAuthorLoads = large.authorRelationshipLoads - small.authorRelationshipLoads
+        assertTrue(deltaBooks > 0, "The larger result set must contain more Books")
         println(
             "M5 SQL evidence: N_small=${small.returnedBooks}, rootBookFetches_small=${small.rootBookFetches}, " +
                 "R_small=${small.authorRelationshipLoads}; N_large=${large.returnedBooks}, " +
@@ -78,8 +81,10 @@ class BooksPaginationAndNPlusOneTests {
                 "deltaN=$deltaBooks, deltaR=$deltaAuthorLoads",
         )
         assertFalse(
-            deltaAuthorLoads == deltaBooks,
-            "Author relationship SQL grew one-for-one with returned Books; N+1 verification is not passed",
+            deltaAuthorLoads.toDouble() / deltaBooks >= MAX_AUTHOR_QUERIES_PER_ADDITIONAL_BOOK,
+            "Author relationship SQL grew by at least $MAX_AUTHOR_QUERIES_PER_ADDITIONAL_BOOK statements " +
+                "per additional Book (deltaR=$deltaAuthorLoads, deltaN=$deltaBooks); " +
+                "N+1 verification is not passed",
         )
     }
 
@@ -135,8 +140,10 @@ class BooksPaginationAndNPlusOneTests {
     }
 
     private fun String.isSelectFrom(table: String): Boolean {
-        val normalized = lowercase()
-        return normalized.startsWith("select") && Regex("\\bfrom\\s+\\\"?$table\\\"?\\b").containsMatchIn(normalized)
+        val normalized = replace("\"", "").replace("`", "").lowercase().trimStart()
+        return normalized.startsWith("select") &&
+            Regex("\\bfrom\\s+(?:[a-z0-9_]+\\.)?${Regex.escape(table.lowercase())}\\b")
+                .containsMatchIn(normalized)
     }
 
     data class BookSummary(val id: String, val title: String)
@@ -153,6 +160,7 @@ class BooksPaginationAndNPlusOneTests {
     )
 
     companion object {
+        private const val MAX_AUTHOR_QUERIES_PER_ADDITIONAL_BOOK = 0.5
         private const val RELATIONSHIP_QUERY =
             "query { books(page: 0, size: 100) { id author { id name } } }"
     }

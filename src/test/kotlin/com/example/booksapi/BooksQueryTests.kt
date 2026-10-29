@@ -96,6 +96,23 @@ class BooksQueryTests {
     }
 
     @Test
+    fun `bookById returns null without errors for an unknown id`() {
+        val response = graphQlTester
+            .document(
+                """
+                query(${'$'}id: ID!) {
+                    bookById(id: ${'$'}id) { id }
+                }
+                """.trimIndent(),
+            )
+            .variable("id", "nonexistent-book-for-null-result-test")
+            .execute()
+
+        response.errors().verify()
+        response.path("bookById").valueIsNull()
+    }
+
+    @Test
     fun `authors query returns persisted authors`() {
         val actual = graphQlTester
             .document("query { authors { id name } }")

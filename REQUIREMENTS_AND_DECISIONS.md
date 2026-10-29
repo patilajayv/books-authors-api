@@ -1,12 +1,12 @@
 # Requirements and Decisions
 
-**Status:** M0–M7 are approved and closed. No later milestone has started. Requirements in the assignment sections below are transcribed from the three training-plan screenshots supplied in this conversation. The screenshots give a project checklist and learning outcomes, but do not define a complete GraphQL SDL or detailed field constraints.
+**Status:** M0–M7 are approved and closed. The approved M8 documentation deliverable, `SUBMISSION_INDEX.md`, is present; no separate formal M8 closure approval is recorded here. Requirements below are transcribed from the three training-plan screenshots supplied in this conversation. The screenshots give a project checklist and learning outcomes, but do not define a complete GraphQL SDL or detailed field constraints.
 
 ## Project scope
 
 Build a small, demoable Books/Authors GraphQL API with Kotlin and Spring Boot/Spring for GraphQL. The mini-project checklist requires Book and Author types, input types, three named queries, three named book mutations, H2 persistence via Spring Data JPA, at least three automated tests, and no N+1 queries on the books-with-authors query.
 
-The current user's project objective further fixes Java 17, Hibernate, Gradle Kotlin DSL, JUnit 5, and GraphQLTester. Those are current project constraints, not all textually specified in the screenshots. M0–M7 are approved and closed; the M7 verification and demo evidence are recorded below.
+The current user's project objective further fixes Java 17, Hibernate, Gradle Kotlin DSL, JUnit 5, and GraphQLTester. Those are current project constraints, not all textually specified in the screenshots. M0–M7 closure and M8 index-deliverable status are recorded below.
 
 ## Source and classification
 
@@ -123,7 +123,7 @@ Exact Book/Author scalar fields; identifier type; relationship cardinality; inpu
 4. The assignment leaves pagination arguments and result shape unspecified. The user authorizes a provisional M5 page/size contract documented below; it is not an assignment-mandated signature.
 5. What additional validation constraints and exact error payload fields/codes, if any, does an evaluator expect beyond M4’s user-authorized standard Spring for GraphQL error handling?
 6. What should the three-or-more automated tests cover beyond the recommended one query and one mutation?
-7. Does the evaluator require a specific Gradle/Java/Spring version, endpoint, README structure, or sample/demo data?
+7. Does the evaluator require a specific Gradle/Java/Spring version, endpoint, additional handoff documentation beyond the Demo Guide and Submission Index, or sample/demo data?
 
 ## Requirements traceability matrix
 
@@ -137,10 +137,10 @@ Exact Book/Author scalar fields; identifier type; relationship cardinality; inpu
 | A-06 | Mutation SDL/resolvers and transactional service layer (M4) | GraphQLTester success/error cases for the user-authorized provisional signatures and persistence/relationship effects; test contracts are recorded under M4 below |
 | A-07 | JPA mappings, repositories, H2 config (M3) | Persistence integration tests against H2 |
 | A-08 | Test suite (M3–M6) | M6 clean test run: 21 tests, 0 failures, 0 errors, 0 skipped; exceeds the required minimum of three. Inventory and suite breakdown are in the M6 record. |
-| A-09 | Relationship loading implementation (M5) | M5 execution-only SQL comparison: (N_small=5, root=1, R_small=1), (N_large=20, root=1, R_large=1), ΔN=15, ΔR=0; no one-for-one growth in this practical check. See M5 record; this is not universal proof. |
+| A-09 | Relationship loading implementation (M5) | Recorded M5 execution-only SQL comparison: (N_small=5, root=1, R_small=1), (N_large=20, root=1, R_large=1), ΔN=15, ΔR=0. The current test criterion is ΔR/ΔN < 0.5; the recorded ratio is 0. This practical check is not universal proof. |
 | A-10 | Nested Book–Author selection in one GraphQL request (M3) | M3 GraphQLTester request selects a book and nested author data in that same request. The M2 `books { id title }` test does not satisfy A-10. |
 | A-12 | Explicit `Book.author` schema field and resolver (M3, after the resolved relationship gate) | SDL defines `Book.author: Author!`; GraphQLTester selects and resolves the field in the persisted-books query. The M2 schema/test does not satisfy A-12. |
-| A-11, U-05 | README, verification evidence, final review (M7) | M6 clean build/test passes; M7 must document and exercise the demo procedure before this end-to-end demo outcome is closed |
+| A-11, U-05 | Demo and verification documentation, final review (M7) | The Demo Guide and Submission Index provide run/demo steps and traceability; the M7 live rehearsal and verification evidence are recorded below. A separate README is not present or required by the screenshots. |
 
 ### M6 requirement coverage audit
 
@@ -156,7 +156,7 @@ Exact Book/Author scalar fields; identifier type; relationship cardinality; inpu
 | A-08 | JUnit 5 and GraphQLTester suite | Clean run: 21 tests, 0 failures/errors/skips (1 context, 6 query/persistence, 10 mutation, 4 pagination/N+1) | Covered | No test percentage or exact case inventory is assignment-mandated. |
 | A-09 | `@BatchMapping` nested Author resolution | Execution-only SQL comparison: N=5/root=1/R=1; N=20/root=1/R=1; ΔN=15/ΔR=0 | Covered | Practical comparison, not universal proof against every N+1 case. |
 | A-10 | Nested Book–Author selection in one GraphQL request | `BooksQueryTests.books query returns persisted books and nested authors` | Covered | Nested data proves functionality, not A-09. |
-| A-11 | Complete tested API intended to be demoable | All required API operations exist and the clean test suite passes | Partially covered | M7 must document and execute the demo procedure and submission review. |
+| A-11 | Complete tested API intended to be demoable | All required API operations exist and the clean test suite passed at M7 | Partially covered at M6; superseded by M7 Pass | The historical M6 status preceded the M7 live demo and final review. |
 | A-12 | SDL `Book.author: Author!` and resolver | Schema inspection plus GraphQLTester selecting and resolving `author` | Covered | Field/resolver evidence is distinct from A-09 SQL-count evidence. |
 
 **Test isolation and error review:** Stateful integration-test classes create fixtures in `@BeforeEach`; fixture setup clears Books before Authors and repopulates required rows. The M5 SQL collector activates only around GraphQL execution and is removed in `finally`. Mutation error assertions reject service not-found messages, exception names, the application package name, and stack-frame text. The clean suite passes together; no test relies on rows left by another test.
@@ -182,7 +182,11 @@ Exact Book/Author scalar fields; identifier type; relationship cardinality; inpu
 | A-11 | Pass | Guide rehearsed from demo-profile startup through seed query, create/update/delete, Author-retention check, and process restart/reset. |
 | A-12 | Pass | SDL contains `Book.author: Author!`; `@BatchMapping` resolves it and GraphQLTester verifies persisted nested data. |
 
-**M7 verification and closure record:** The configured command `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain` exited 0 with `BUILD SUCCESSFUL`: 23 tests, 0 failures, 0 errors, 0 skipped (1 default-profile context/isolation, 2 demo-seed, 6 query/persistence, 10 mutation, 4 pagination/N+1). A sandbox attempt failed before build startup because Gradle could not create its file-lock socket; the same command succeeded with execution approval. Demo-profile `bootRun` logged HTTP POST `/graphql`. Live requests verified Author query, nested Book creation, title update with omitted `authorId`, deletion returning `true`, Author retention, empty Books, and `bookById: null` after deletion. A separate live `books { id title author { id name } }` query returned a persisted Book and nested Author in one HTTP 200 response. Restarting the demo profile returned exactly one seeded Author and no Books, verifying reset/reseed. The full suite rechecked the M5 SQL test: N=5/root=1/R=1 and N=20/root=1/R=1, ΔN=15/ΔR=0. M7 is formally approved and closed by the user. The demo-only Author seed remains isolated to the explicitly activated `demo` profile. A-01 through A-12 have the M7 statuses and evidence in the table above; A-09 is a practical measured comparison, not universal proof. Pagination remains a provisional project contract. No later milestone has started.
+**M7 verification and closure record (historical milestone result):** The configured command `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain` exited 0 with `BUILD SUCCESSFUL`: 23 tests, 0 failures, 0 errors, 0 skipped (1 default-profile context/isolation, 2 demo-seed, 6 query/persistence, 10 mutation, 4 pagination/N+1). A sandbox attempt failed before build startup because Gradle could not create its file-lock socket; the same command succeeded with execution approval. Demo-profile `bootRun` logged HTTP POST `/graphql`. Live requests verified Author query, nested Book creation, title update with omitted `authorId`, deletion returning `true`, Author retention, empty Books, and `bookById: null` after deletion. A separate live nested Books query returned a persisted Book and Author in one HTTP 200 response. Restarting the demo profile returned exactly one seeded Author and no Books, verifying reset/reseed. The suite rechecked the M5 SQL comparison: N=5/root=1/R=1 and N=20/root=1/R=1, ΔN=15/ΔR=0. M7 is formally approved and closed by the user. The demo-only Author seed remains isolated to the explicitly activated `demo` profile. A-01 through A-12 have the M7 statuses and evidence in the table above; A-09 is a practical measured comparison, not universal proof. Pagination remains a provisional project contract.
+
+**Current test-result artifact observed during the documentation review (not rerun):** the existing Gradle XML reports contain 29 tests, 0 failures, 0 errors, and 0 skipped in total. This is a reading of the present artifacts, not a new Gradle invocation; the 23-test M7 result above remains the historical M7 milestone result.
+
+**M8 documentation deliverable:** `SUBMISSION_INDEX.md` was created under the approved narrow M8 scope and links to existing implementation and evidence. The project records do not show a separate formal M8 closure approval. No application implementation is claimed for M8.
 
 ## Engineering decisions (proposed)
 
@@ -265,7 +269,7 @@ The assignment requires a paginated `books` query but does not prescribe its arg
 
 For the M5 N+1 comparison, select a test-only Hibernate `StatementInspector` collector rather than adding a runtime dependency. Capture SQL only while each identical GraphQL query executes, after fixture setup and before cleanup. Classify Book-table SELECTs as root fetches and Author-table SELECTs as relationship loads. Verify the collector against actual GraphQL/H2 execution and report raw counts. No measurements are claimed until the M5 tests run.
 
-- **N+1 evidence rule:** nested response data proves relationship functionality only. A-09 acceptance separately requires a repeatable query-count comparison across different books-result sizes under the same schema, GraphQL query shape, selected relationship fields, H2 configuration, and comparable fixtures. Count SQL only during GraphQL query execution, excluding fixture setup, cleanup, schema initialization, and unrelated statements; report root Book-fetch statements separately from Author-relationship loading statements. Demonstrate that relationship-loading statements do not increase one-for-one with each additional returned book. The test-only Hibernate `StatementInspector` collector is selected and verified for M5; actual measured evidence appears below.
+- **N+1 evidence rule:** nested response data proves relationship functionality only. A-09 acceptance separately requires a repeatable query-count comparison across different books-result sizes under the same schema, GraphQL query shape, selected relationship fields, H2 configuration, and comparable fixtures. Count SQL only during GraphQL query execution, excluding fixture setup, cleanup, schema initialization, and unrelated statements; report root Book-fetch statements separately from Author-relationship loading statements. The implemented M5 test passes only when `ΔN > 0` and `ΔR / ΔN < 0.5`; ambiguous, noisy, or higher-ratio results fail pending investigation. The test-only Hibernate `StatementInspector` collector was selected and verified for M5; the recorded measurement appears below.
 
 ## M1 implementation record
 

@@ -1,6 +1,6 @@
 # Submission Index
 
-This page is the reviewer entry point for the completed Books and Authors GraphQL API. It links to the existing project records and does not replace the detailed walkthrough or repeat the full requirements matrix.
+This page is the reviewer entry point for the completed Books and Authors GraphQL API. It links to the existing project records and does not replace the detailed walkthrough or repeat the full requirements matrix. This index was created as the approved M8 documentation deliverable; the project records contain no separate formal M8 closure approval.
 
 ## Build and automated tests
 
@@ -11,6 +11,8 @@ Use the included Gradle wrapper and Java 17. The existing commands and environme
 - `./gradlew bootRun --args='--spring.profiles.active=demo' --console=plain`
 
 **Previously recorded result (not rerun for this index):** the final clean test run completed with `BUILD SUCCESSFUL`: 23 tests, 0 failures, 0 errors, and 0 skipped. The command, runtime environment, and test breakdown are recorded in [Testing and Backlog — M7](TESTING_AND_BACKLOG.md#m7-documentation-and-submission-review) and [Requirements and Decisions — M7 verification and closure record](REQUIREMENTS_AND_DECISIONS.md#m7-demo-rehearsal-and-final-traceability).
+
+The existing Gradle test-result XML was later inspected during documentation reconciliation and records 29 tests, 0 failures, 0 errors, and 0 skipped. No tests were rerun for that documentation update; the 23-test figure above remains the historical M7 run.
 
 ## Live demonstration
 

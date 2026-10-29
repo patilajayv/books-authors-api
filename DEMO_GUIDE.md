@@ -60,7 +60,7 @@ The Spring GraphQL starter exposes the bundled GraphiQL page at [http://localhos
 
 The GraphiQL HTML page is bundled in the Spring GraphQL dependency. Its current UI module, stylesheet, and editor worker imports reference `esm.sh`, so the browser needs internet access to load those assets. The application endpoint itself remains local.
 
-For the GraphiQL change, `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain` completed successfully: 28 tests, 0 failures, 0 errors, and 0 skipped. Live browser checks also executed the `authors`, `addBook`, `updateBook`, and `deleteBook` operations; displayed nested Author data and a GraphQL error for a missing Book; and confirmed the Author remained after deleting its Book. This is the result of the current run, not a claim that the tests will pass in every environment.
+**Historical GraphiQL verification:** At the time GraphiQL support was added, the recorded command `env JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home GRADLE_USER_HOME=/private/tmp/gradle-user-home JAVA_OPTS=-Djava.io.tmpdir=/private/tmp/gradle-tmp ./gradlew clean test --console=plain` completed successfully with 28 tests, 0 failures, 0 errors, and 0 skipped. The live browser checks executed `authors`, `addBook`, `updateBook`, and `deleteBook`, displayed nested Author data and an error for a missing Book, and confirmed Author retention after Book deletion. This is historical evidence for that change.
 
 ## Persistence and demo data prerequisite
 
@@ -209,7 +209,7 @@ The M5 integration test executes the same nested GraphQL query against comparabl
 | 5 | 1 | 1 |
 | 20 | 1 | 1 |
 
-`ΔN = 20 - 5 = 15`; `ΔR = 1 - 1 = 0`. This tested comparison does not show one relationship query per additional Book. It is practical evidence for the tested query and fixtures, not universal proof that every possible N+1 issue is absent. A nested GraphQL response alone is not this SQL-count evidence.
+`ΔN = 20 - 5 = 15`; `ΔR = 1 - 1 = 0`, so `ΔR/ΔN = 0`. The current regression assertion requires `ΔN > 0` and `ΔR/ΔN < 0.5`; ratios at or above 0.5 fail pending investigation. This recorded comparison is evidence for the tested query and fixtures, not universal proof that every possible N+1 issue is absent. A nested GraphQL response alone is not this SQL-count evidence.
 
 ## Default-profile rehearsal and current limitation
 
@@ -279,4 +279,6 @@ After stopping the process and starting a new demo-profile process, the combined
 
 This verifies reset and seed reapplication. The SQL `MERGE` was executed successfully at startup; a profile test reruns the actual SQL resource and confirms exactly one Author remains.
 
-The clean verification run after adding profile-isolation and idempotence tests completed with `BUILD SUCCESSFUL`, exit status 0: 23 tests, 0 failures, 0 errors, and 0 skipped. The test report includes 1 default-profile context/isolation test, 2 demo-seed tests, 6 query/persistence tests, 10 mutation tests, and 4 pagination/N+1 tests. The M5 SQL comparison in that run remained: 5 Books/root 1/Author 1 and 20 Books/root 1/Author 1 (`ΔN=15`, `ΔR=0`). M7 was formally approved and closed by the user; pagination remains a provisional project contract.
+**Historical M7 verification:** The clean run after adding profile-isolation and idempotence tests completed with `BUILD SUCCESSFUL`, exit status 0: 23 tests, 0 failures, 0 errors, and 0 skipped (1 default-profile context/isolation, 2 demo-seed, 6 query/persistence, 10 mutation, and 4 pagination/N+1 tests). The M5 SQL comparison in that run was 5 Books/root 1/Author 1 and 20 Books/root 1/Author 1 (`ΔN=15`, `ΔR=0`). M7 was formally approved and closed by the user; pagination remains a provisional project contract.
+
+**Current test-result artifact observed during documentation reconciliation (not rerun):** the existing Gradle XML reports record 29 tests, 0 failures, 0 errors, and 0 skipped. No build or test command was run while updating this guide.
