@@ -1,0 +1,15 @@
+.gradle/
+.kotlin/
+build/
+.idea/
+*.iml
+.DS_Store
+*.log
+*.tmp
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
